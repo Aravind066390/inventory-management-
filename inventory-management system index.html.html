@@ -1,756 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Inventory Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Free Weather</title>
   <style>
-    <!--css starts here-->
+    h2{
+        font-style:oblique;
+    }
     body {
-      background-color: #f4f7f6;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background: #dbeafe;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      border-radius: 8px;
-    }
-    header {
+      background: rgb(154, 192, 222);
+      padding:7%;
+      border-radius: 5%;
+      box-shadow: 0 4px 10px rgba(18, 18, 18, 0.1);
+      width: 50%;
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 36px;
-      color: #5A5A5A;
     }
-    .main-content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .left-panel {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .right-panel {
-      flex: 1;
-      min-width: 300px;
-      display: none;
-    }
-    .inventory-form {
-      margin-bottom: 40px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-    }
-    .inventory-form h2 {
-      font-size: 24px;
-      color: #4CAF50;
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      color: #777;
-      margin-bottom: 5px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
+    input {
+      padding: 8px;
       font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      margin: 5px;
     }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
     button {
-      width: 100%;
-      padding: 12px;
+      padding: 8px;
       font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #467a48;
-    }
-
-    .inventory-list {
-      overflow-x: auto;
-    }
-
-    .inventory-list table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    .inventory-list th, .inventory-list td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .inventory-list th {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .inventory-list td {
-      background-color: #f9f9f9;
-    }
-
-    .actions button {
-      padding: 6px 12px;
-      margin: 2px;
-      background-color:red;
-      color: rgb(0, 0, 0);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      width: auto;
-      background:transition 0.9s ease;
-    }
-    .acctions button:hover{
-      background-color:navy;
-    }
-    .view-button {
-      background-color: #2196F3;
-      background-color:transition 0.99s ease;
-    }
-
-    .view-button:hover {
-      background-color: #385f80;
-    }
-
-    exit{
-      margin-top: 20px;
-      background-color: #f44336;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    exit:hover {
-      background-color: #e53935;
-    }
-
-    .toggle-form-button {
-      background-color: #673AB7;
-      margin-bottom: 20px;
-    }
-
-    .toggle-form-button:hover {
-      background-color: #5e35b1;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 14px;
-      color: #777;
-    }
-
-    /* Search Bar Style */
-    .search-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .search-container input {
-      width: 80%;
-      margin-right: 10px;
-    }
-
-    .search-container button {
-      width: 18%;
-    }
-
-    /* Item Detail Page Style */
-    .item-detail {
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .item-detail h2 {
-      font-size: 24px;
-      color: #2196F3;
-      margin-bottom: 15px;
-    }
-
-    .item-image {
-      width: 100%;
-      height: 200px;
-      background-color: #ddd;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .item-image img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .quantity-control button {
-      width: 40px;
-      height: 40px;
-      font-size: 20px;
-      padding: 0;
-      border-radius: 50%;
-    }
-
-    .quantity-control input {
-      width: 60px;
-      text-align: center;
-      margin: 0 10px;
-    }
-
-    .edit-detail-button {
-      background-color: #FF9800;
-      margin-bottom: 10px;
-    }
-
-    .edit-detail-button:hover {
-      background-color: #F57C00;
-    }
-
-    .save-detail-button {
-      background-color: #4CAF50;
-      margin-bottom: 10px;
-    }
-
-    .save-detail-button:hover {
-      background-color: #519754;
-    }
-
-    .back-button {
-      background-color: #607D8B;
-      margin-bottom: 10px;
-    }
-
-    .back-button:hover {
-      background-color: #546E7A;
-    }
-
-    .detail-info {
-      margin-bottom: 20px;
-    }
-    .detail-info p {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .detail-label {
-      font-weight: bold;
-      color: #555;
-    }
-
-    .detail-value {
-      margin-left: 10px;
-    }
-
-    /* Read-only and Edit mode styles */
-    .detail-view .edit-mode {
-      display: none;
-    }
-
-    .detail-edit .read-mode {
-      display: none;
-    }
-
-    .detail-view .read-mode, .detail-edit .edit-mode {
-      display: block;
-    }
-
-    /* Item clickable style */
-    .clickable {
-      cursor: pointer;
-      text-decoration: underline;
-      color: #2196F3;
-    }
-
-    .clickable:hover {
-      color: #0b7dda;
-    }
-
-    /* Date related styles */
-    .date-input-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .date-input-container input {
-      margin-bottom: 0;
-    }
-    .date-badge {
-      font-size: 12px;
-      background-color: #e0e0e0;
-      padding: 3px 6px;
-      border-radius: 4px;
-      color: #555;
+      margin: 5px;
+      border-radius:10px;
     }
   </style>
 </head>
 <body>
+  <h2>LIVE WEATHER UPDATES</h2>
   <div class="container">
-    <header>
-      <h1>Inventory Management System</h1>
-    </header>
-
-    <!-- Search Bar Section -->
-    <div class="search-container">
-      <input type="text" id="search-bar" placeholder="Search for an item...">
-      <button onclick="searchItem()">Search</button>
-    </div>
-
-    <button class="toggle-form-button" onclick="toggleFormPanel()">Add New Item</button>
-
-    <div class="main-content">
-      <!-- Left Panel - Inventory List -->
-      <div class="left-panel">
-        <section class="inventory-list">
-          <h2>Inventory List</h2>
-          <table id="inventoryTable">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Date Added</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Inventory items will be dynamically inserted here -->
-            </tbody>
-          </table>
-        </section>
-      </div>
-
-      <!-- Right Panel - Add/Edit Form -->
-      <div class="right-panel" id="formPanel">
-        <section class="inventory-form">
-          <h2>Add New Item</h2>
-          <form id="inventoryForm">
-            <label for="item-name">Item Name</label>
-            <input type="text" id="item-name" placeholder="Enter item name" required>
-
-            <label for="item-quantity">Quantity</label>
-            <input type="number" id="item-quantity" placeholder="Enter quantity" required>
-
-            <label for="item-price">Price</label>
-            <input type="number" id="item-price" placeholder="Enter price" required>
-
-            <label for="item-description">Description</label>
-            <textarea id="item-description" placeholder="Enter item description"></textarea>
-
-            <label for="item-image">Image URL</label>
-            <input type="text" id="item-image" placeholder="Enter image URL">
-
-            <label for="item-date">Set Date Added</label>
-            <input type="date" id="item-date">
-
-            <button type="submit">Add Item</button>
-          </form>
-        </section>
-      </div>
-
-      <!-- Item Detail View (Initially Hidden) -->
-      <div class="right-panel detail-view" id="detailPanel">
-        <div class="item-detail">
-          <h2 id="detail-title">Item Details</h2>
-          
-          <div class="item-image">
-            <img id="detail-image" src="" alt="Item Image">
-          </div>
-          
-          <!-- Read Mode -->
-          <div class="read-mode">
-            <div class="detail-info">
-              <p><span class="detail-label">Description:</span> <span id="detail-description" class="detail-value"></span></p>
-              <p><span class="detail-label">Price:</span> <span id="detail-price" class="detail-value"></span></p>
-              
-              <div class="quantity-control">
-                <span class="detail-label">Quantity:</span>
-                <button onclick="decreaseQuantity()">-</button>
-                <input type="number" id="detail-quantity" readonly>
-                <button onclick="increaseQuantity()">+</button>
-              </div>
-              
-              <p><span class="detail-label">Total Valu:</span> <span id="detail-total" class="detail-value"></span></p>
-              <p><span class="detail-label">Date Added:</span> <span id="detail-date" class="detail-value"></span></p>
-            </div>
-            
-            <button class="edit-detail-button" onclick="switchToEditMode()">Edit Details</button>
-            <button class="back-button" onclick="hideDetailPanel()">Back to Inventory</button>
-          </div>
-          
-          <!-- Edit Mode -->
-          <div class="edit-mode">
-            <form id="editForm">
-              <label for="edit-name">Item Name</label>
-              <input type="text" id="edit-name" required>
-              
-              <label for="edit-description">Description</label>
-              <textarea id="edit-description"></textarea>
-              
-              <label for="edit-price">Price</label>
-              <input type="number" id="edit-price" required>
-              
-              <label for="edit-quantity">Quantity</label>
-              <input type="number" id="edit-quantity" required>
-              
-              <label for="edit-image">Image URL</label>
-              <input type="text" id="edit-image">
-              
-              <label for="edit-date">Date Added</label>
-              <input type="date" id="edit-date">
-              
-              <button type="submit" class="save-detail-button">Save Changes</button>
-              <button type="button" class="back-button" onclick="cancelEdit()">Cancel</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-<!--end of css-->
-    <button class="exit-button" onclick="exitInventory()">Exit</button>
-
-    <footer>
-      <p>Enhanced Inventory Management System</p>
-    </footer>
+    <input type="text" id="city" placeholder="Enter city (e.g. London)" required/>
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="result" style="margin-top: 15px;"></div>
+    <br><br>
   </div>
 
   <script>
-    // Global variables
-    let currentItemIndex = 0;
-    
-    // Load inventory data from localStorage on page load
-    window.onload = function() {
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      storedItems.forEach((item, index) => {
-        addItemToInventory(item, index);
-      });
-    };
-
-    // Format date for display
-    function formatDate(dateString) {
-      if (!dateString) return "Not specified";
+    async function getWeather() {
+      const city = document.getElementById('city').value.trim();
+      const result = document.getElementById('result');
       
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return "Invalid date";
-      
-      return date.toLocaleDateString();
-    }
 
-    // Get current date in YYYY-MM-DD format for date input
-    function getCurrentDateForInput() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
+      result.innerHTML = "Loading...";
 
-    // Handle form submission for new items
-    document.getElementById('inventoryForm').addEventListener('submit', function(event) {
-      event.preventDefault();
+      try {
+               const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json`);
+        const geoData = await geoRes.json();
 
-      const itemName = document.getElementById('item-name').value;
-      const itemQuantity = document.getElementById('item-quantity').value;
-      const itemPrice = document.getElementById('item-price').value;
-      const itemDescription = document.getElementById('item-description').value;
-      const itemImage = document.getElementById('item-image').value;
-      const itemDate = document.getElementById('item-date').value || getCurrentDateForInput();
+        if (!geoData.length) {
+          result.innerHTML = "City not found.";
+          return;
+        }
 
-      if (itemName && itemQuantity && itemPrice) {
-        const newItem = {
-          name: itemName,
-          quantity: parseInt(itemQuantity),
-          price: parseFloat(itemPrice),
-          description: itemDescription || 'No description available',
-          image: itemImage || 'placeholder.jpg',
-          dateAdded: itemDate
-        };
-        
-        // Save to localStorage and update display
-        saveItem(newItem);
-        clearForm();
-        toggleFormPanel();
-      } else {
-        alert('Please fill out all required fields');
-      }
-    });
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
 
-    // Handle form submission for editing items
-    document.getElementById('editForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      if (currentItemIndex >= 0) {
-        const updatedItem = {
-          name: document.getElementById('edit-name').value,
-          description: document.getElementById('edit-description').value,
-          price: parseFloat(document.getElementById('edit-price').value),
-          quantity: parseInt(document.getElementById('edit-quantity').value),
-          image: document.getElementById('edit-image').value,
-          dateAdded: document.getElementById('edit-date').value
-        };
-        
-        updateItem(currentItemIndex, updatedItem);
-        switchToReadMode();
-        refreshDetailView(updatedItem);
-      }
-    });
+        // Get weather from Open-Meteo
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const weatherData = await weatherRes.json();
 
-    // Function to add item to inventory list
-    function addItemToInventory(item, index) {
-      const tableBody = document.querySelector('#inventoryTable tbody');
-      const row = document.createElement('tr');
-      
-      row.innerHTML = `
-        <td class="clickable" onclick="viewItemDetails(${index})">${item.name}</td>
-        <td>${item.quantity}</td>
-        <td>₹${parseFloat(item.price).toFixed(2)}</td>
-        <td>${formatDate(item.dateAdded)}</td>
-        <td class="actions">
-          <button class="view-button" onclick="viewItemDetails(${index})">View</button>
-          <button onclick="removeItem(this, ${index})">Remove</button>
-        </td>
-      `;
+        if (!weatherData.current_weather) {
+          result.innerHTML = "Weather data not available.";
+          return;
+        }
 
-      tableBody.appendChild(row);
-    }
+        const current = weatherData.current_weather;
 
-    // Function to view item details
-    function viewItemDetails(index) {
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      if (index >= 0 && index < storedItems.length) {
-        const item = storedItems[index];
-        currentItemIndex = index;
-        
-        // Switch to detail panel
-        document.getElementById('formPanel').style.display = 'none';
-        document.getElementById('detailPanel').style.display = 'block';
-        
-        // Make sure we're in read mode
-        document.getElementById('detailPanel').classList.remove('detail-edit');
-        document.getElementById('detailPanel').classList.add('detail-view');
-        
-        // Update detail view with item data
-        refreshDetailView(item);
-      }
-    }
-
-    // Refresh the detail view with current item data
-    function refreshDetailView(item) {
-      document.getElementById('detail-title').textContent = item.name;
-      document.getElementById('detail-description').textContent = item.description;
-      document.getElementById('detail-price').textContent = `₹${parseFloat(item.price).toFixed(2)}`;
-      document.getElementById('detail-quantity').value = item.quantity;
-      document.getElementById('detail-total').textContent = `₹${(item.price * item.quantity).toFixed(2)}`;
-      document.getElementById('detail-date').textContent = formatDate(item.dateAdded);
-      
-      // Set image src with fallback
-      const imgElement = document.getElementById('detail-image');
-      imgElement.src = item.image;
-      imgElement.onerror = function() {
-        this.src = 'https://via.placeholder.com/200x150?text=No+Image';
-      };
-
-      // Set edit form values as well
-      document.getElementById('edit-name').value = item.name;
-      document.getElementById('edit-description').value = item.description;
-      document.getElementById('edit-price').value = item.price;
-      document.getElementById('edit-quantity').value = item.quantity;
-      document.getElementById('edit-image').value = item.image;
-      document.getElementById('edit-date').value = item.dateAdded || '';
-    }
-
-    // Switch to edit mode for details
-    function switchToEditMode() {
-      document.getElementById('detailPanel').classList.remove('detail-view');
-      document.getElementById('detailPanel').classList.add('detail-edit');
-    }
-
-    // Switch back to read mode for details
-    function switchToReadMode() {
-      document.getElementById('detailPanel').classList.remove('detail-edit');
-      document.getElementById('detailPanel').classList.add('detail-view');
-    }
-
-    // Cancel edit operation
-    function cancelEdit() {
-      // Simply switch back to read mode, without saving changes
-      switchToReadMode();
-      
-      // Refresh the view with original data
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      if (currentItemIndex >= 0 && currentItemIndex < storedItems.length) {
-        refreshDetailView(storedItems[currentItemIndex]);
-      }
-    }
-
-    // Hide the detail panel
-    function hideDetailPanel() {
-      document.getElementById('detailPanel').style.display = 'none';
-      currentItemIndex = -1;
-    }
-
-    // Increase quantity from detail view
-    function increaseQuantity() {
-      if (currentItemIndex >= 0) {
-        const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-        if (currentItemIndex < storedItems.length) {
-          storedItems[currentItemIndex].quantity++;
-          localStorage.setItem('inventory', JSON.stringify(storedItems));
+        result.innerHTML = `
+        <br><br>
+        <li><strong >-City:</strong> ${city}<br/></li>
+         <li><strong >-Temperature:</strong> ${current.temperature} °C<br/></li>
+         <li> <strong >-Windspeed:</strong> ${current.windspeed} km/h<br/></li>
+         <li> <strong >-Time:</strong> ${current.time}</li>
           
-          // Update display
-          refreshDetailView(storedItems[currentItemIndex]);
-          refreshInventoryTable();
-        }
+        `;
+      } catch (error) {
+        result.innerHTML = "Error fetching data.";
+        console.error(error);
       }
-    }
-    // Decrease quantity from detail view
-    function decreaseQuantity() {
-      if (currentItemIndex >= 0) {
-        const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-        if (currentItemIndex < storedItems.length && storedItems[currentItemIndex].quantity > 0) {
-          storedItems[currentItemIndex].quantity--;
-          localStorage.setItem('inventory', JSON.stringify(storedItems));
-          
-          // Update display
-          refreshDetailView(storedItems[currentItemIndex]);
-          refreshInventoryTable();
-        }
-      }
-    }
-    // Save a new item
-    function saveItem(item) {
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      storedItems.push(item);
-      localStorage.setItem('inventory', JSON.stringify(storedItems));
-      
-      // Add to table display
-      addItemToInventory(item, storedItems.length - 1);
-    }
-
-    // Update an existing item
-    function updateItem(index, updatedItem) {
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      if (index >= 0 && index < storedItems.length) {
-        storedItems[index] = updatedItem;
-        localStorage.setItem('inventory', JSON.stringify(storedItems));
-        
-        // Refresh table display
-        refreshInventoryTable();
-      }
-    }
-
-    // Remove item from inventory list and update localStorage
-    function removeItem(button, index) {
-      const row = button.closest('tr');
-      row.remove();
-
-      // Remove item from localStorage
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      storedItems.splice(index, 1);
-      localStorage.setItem('inventory', JSON.stringify(storedItems));
-      
-      // Hide detail panel if it was showing the removed item
-      if (currentItemIndex === index) {
-        hideDetailPanel();
-      }
-      
-      // Refresh the table to update indices
-      refreshInventoryTable();
-    }
-
-    // Refresh the entire inventory table
-    function refreshInventoryTable() {
-      const tableBody = document.querySelector('#inventoryTable tbody');
-      tableBody.innerHTML = '';
-      
-      const storedItems = JSON.parse(localStorage.getItem('inventory')) || [];
-      storedItems.forEach((item, index) => {
-        addItemToInventory(item, index);
-      });
-    }
-
-    // Toggle the form panel
-    function toggleFormPanel() {
-      const formPanel = document.getElementById('formPanel');
-      const detailPanel = document.getElementById('detailPanel');
-      
-      if (formPanel.style.display === 'none' || formPanel.style.display === '') {
-        formPanel.style.display = 'block';
-        detailPanel.style.display = 'none';
-        
-        // Set default date to today
-        document.getElementById('item-date').value = getCurrentDateForInput();
-      } else {
-        formPanel.style.display = 'none';
-      }
-    }
-
-    // Clear form inputs after adding item
-    function clearForm() {
-      document.getElementById('item-name').value = '';
-      document.getElementById('item-quantity').value = '';
-      document.getElementById('item-price').value = '';
-      document.getElementById('item-description').value = '';
-      document.getElementById('item-image').value = '';
-      document.getElementById('item-date').value = getCurrentDateForInput();
-    }
-
-    // Exit button functionality to clear all inventory and localStorage
-    function exitInventory() {
-        // Try to close the window (may not work in all browsers as it didnt work in vscode and one compilers and many other online compilers dont support it)
-        window.close();
-      }
-    // Search item functionality
-    function searchItem() {
-      const searchTerm = document.getElementById('search-bar').value.toLowerCase();
-      const rows = document.querySelectorAll('#inventoryTable tbody tr');
-      
-      rows.forEach(row => {
-        const itemName = row.cells[0].textContent.toLowerCase();
-        if (itemName.includes(searchTerm)) {
-          row.style.display = ''; // Show matching item
-        } else {
-          row.style.display = 'none'; // Hide non-matching item
-        }
-      });
     }
   </script>
 </body>
