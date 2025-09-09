@@ -1,95 +1,228 @@
-/* your original CSS (paste everything you already have) */
-/* I'll include the core + additions for cart + print */
+/* === Global Reset === */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
+
 body {
-  background-color: #f4f7f6;
+  background: #f2f4f7;
   color: #333;
   padding: 20px;
-  transition: background-color 0.3s, color 0.3s;
 }
+
+/* === Container === */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  border-radius: 8px;
-  transition: background-color 0.3s, color 0.3s;
-  position: relative;
-}
-/* ... include all your CSS from the snippet you provided earlier ... */
-/* I assume you've pasted all that above; now add these new styles: */
-
-.cart-drawer {
-  position: fixed;
-  right: 20px;
-  top: 80px;
-  width: 360px;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  border-radius: 8px;
-  padding: 16px;
-  z-index: 1200;
-}
-
-.cart-item {
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid #eee;
-}
-
-.cart-summary {
-  margin-top: 12px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* Printable invoice styles */
-.invoice {
-  width: 800px;
+  border-radius: 12px;
   padding: 24px;
-  font-family: Arial, sans-serif;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* === Header === */
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 30px;
+}
+header h1 {
+  font-size: 28px;
+  color: #444;
+  letter-spacing: 1px;
+}
+.header-buttons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  gap: 8px;
+}
+.header-buttons button {
+  background: #4caf50;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.header-buttons button:hover {
+  background: #3d9142;
+}
+
+/* === Search Bar === */
+.search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.search-container input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+}
+.search-container button {
+  background: #2196f3;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.search-container button:hover {
+  background: #1976d2;
+}
+
+/* === Inventory Table === */
+.inventory-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.inventory-list th,
+.inventory-list td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+.inventory-list th {
+  background: #4caf50;
+  color: white;
+  font-weight: 600;
+}
+.inventory-list td {
+  background: #fafafa;
+}
+.actions button {
+  padding: 6px 10px;
+  margin: 2px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.actions .view-button {
+  background: #2196f3;
+  color: white;
+}
+.actions .view-button:hover {
+  background: #1976d2;
+}
+.actions .delete-button {
+  background: #f44336;
+  color: white;
+}
+.actions .delete-button:hover {
+  background: #d32f2f;
+}
+.actions .add-button {
+  background: #673ab7;
+  color: white;
+}
+.actions .add-button:hover {
+  background: #5e35b1;
+}
+
+/* === Forms === */
+.inventory-form {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.inventory-form h2 {
+  margin-bottom: 15px;
   color: #333;
 }
-
-.invoice header {
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:12px;
+label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  color: #555;
+}
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+button {
+  padding: 10px 14px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover {
+  background: #3d9142;
 }
 
-.invoice h2 { margin:0; }
-
-.invoice table { width:100%; border-collapse:collapse; margin-top:12px; }
-.invoice table th, .invoice table td {
-  border:1px solid #ddd;
-  padding:8px;
-  text-align:left;
-  font-size:14px;
+/* === Bill Panel === */
+.bill-panel {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-top: 20px;
+}
+.bill-panel h3 {
+  margin-bottom: 10px;
+  color: #444;
+}
+.cart-items {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+.cart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed #ddd;
+  font-size: 15px;
+}
+.cart-row button {
+  background: #f44336;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.cart-row button:hover {
+  background: #d32f2f;
+}
+.totals {
+  font-size: 15px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 2px solid #eee;
+}
+.totals span {
+  font-weight: bold;
+  color: #222;
 }
 
-.invoice .totals {
-  margin-top:12px;
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  flex-direction:column;
-  align-items:flex-end;
-}
-
-/* Hide interactive UI when printing */
-@media print {
-  body * { visibility: hidden; }
-  .invoice, .invoice * { visibility: visible; }
-  .invoice { position: absolute; left:0; top:0; width:100%; }
-}
-
-/* small helper */
-.hidden { display:none; }
+/* === Footer === */
+footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  }
