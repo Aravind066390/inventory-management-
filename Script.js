@@ -1,4 +1,4 @@
-/* script.js - Fixed for your HTML layout + Printing */
+/* script.js - Fixed for your HTML layout */
 document.addEventListener("DOMContentLoaded", initApp);
 
 let inventory = [
@@ -33,10 +33,6 @@ function initApp() {
 
   // cart open
   document.getElementById("cart-open").addEventListener("click", showCart);
-
-  // checkout & print
-  const checkoutBtn = document.getElementById("checkout-btn");
-  if (checkoutBtn) checkoutBtn.addEventListener("click", checkout);
 }
 
 /* ----------- Inventory ----------- */
@@ -112,94 +108,18 @@ function renderCartCount() {
 
 function showCart() {
   if (cart.length === 0) {
-    alert("Cart is empty");
-    return;
-  }
-  let text = "Cart:\n";
-  cart.forEach((c) => (text += `${c.name} x ${c.qty} = ₹${c.price * c.qty}\n`));
-  text += `\nTotal = ₹${cart.reduce((s, i) => s + i.price * i.qty, 0)}`;
-  alert(text);
-}
-
-/* ----------- Checkout + Print ----------- */
-function checkout() {
-  if (cart.length === 0) {
     alert("Cart is empty!");
     return;
   }
-  const inv = {
-    id: "INV-" + Date.now(),
-    date: new Date().toLocaleString(),
-    items: [...cart],
-  };
-  generateAndPrintInvoice(inv);
 
-  // reduce inventory
-  inv.items.forEach((ci) => {
-    const it = inventory.find((i) => i.id === ci.id);
-    if (it) it.qty = Math.max(0, it.qty - ci.qty);
-  });
-  renderInventory();
+  let text = "Cart:\n";
+  cart.forEach((c) => (text += `${c.name} x ${c.qty} = ₹${c.price * c.qty}\n`));
+  text += `\nTotal = ₹${cart.reduce((s, i) => s + i.price * i.qty, 0)}`;
+  text += `\n\nDo you want to print invoice?`;
 
-  // clear cart
-  cart = [];
-  renderCartCount();
-}
-
-function generateAndPrintInvoice(inv) {
-  let rows = "";
-  inv.items.forEach((it, idx) => {
-    rows += `<tr>
-      <td>${idx + 1}</td>
-      <td>${it.name}</td>
-      <td style="text-align:right;">${it.qty}</td>
-      <td style="text-align:right;">₹${it.price.toFixed(2)}</td>
-      <td style="text-align:right;">₹${(it.price * it.qty).toFixed(2)}</td>
-    </tr>`;
-  });
-
-  const sub = inv.items.reduce((s, it) => s + it.price * it.qty, 0);
-
-  const invoiceHtml = `
-    <html>
-      <head>
-        <title>${inv.id}</title>
-        <style>
-          body{ font-family: Arial, sans-serif; padding:20px; }
-          table{ width:100%; border-collapse:collapse; margin-top:12px; }
-          th, td{ border:1px solid #ddd; padding:6px; font-size:14px; }
-          th{ background:#f4f4f4; }
-          .right{ text-align:right; }
-        </style>
-      </head>
-      <body>
-        <h2>Invoice ${inv.id}</h2>
-        <small>${inv.date}</small>
-        <table>
-          <thead>
-            <tr><th>#</th><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-        <h3 class="right">Total: ₹${sub.toFixed(2)}</h3>
-      </body>
-    </html>
-  `;
-
-  const w = window.open("", "_blank");
-  w.document.open();
-  w.document.write(invoiceHtml);
-  w.document.close();
-
-  w.onload = () => {
-    w.focus();
-    w.print();
-    w.onafterprint = () => {
-      try {
-        w.close();
-      } catch (e) {}
-    };
-  };
+  if (confirm(text)) {
+    printInvoice();
+  }
 }
 
 /* ----------- Dark / Light Mode ----------- */
@@ -233,4 +153,47 @@ function sendMessage() {
   box.innerHTML += `<div class="bot-msg">${reply}</div>`;
   input.value = "";
   box.scrollTop = box.scrollHeight;
+}
+
+/* ----------- Invoice Printing ----------- */
+function printInvoice() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  let invoiceHtml = `
+    <html>
+    <head>
+      <title>Invoice</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        .total { font-weight: bold; text-align: right; }
+      </style>
+    </head>
+    <body>
+      <h1>Invoice</h1>
+      <table>
+        <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+        ${cart.map(c => `<tr>
+            <td>${c.name}</td>
+            <td>${c.qty}</td>
+            <td>₹${c.price.toFixed(2)}</td>
+            <td>₹${(c.qty * c.price).toFixed(2)}</td>
+          </tr>`).join("")}
+        <tr><td colspan="3" class="total">Grand Total</td><td>₹${total.toFixed(2)}</td></tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(invoiceHtml);
+  w.document.close();
+  w.onload = () => {
+    w.print();
+    w.close();
+  };
 }
