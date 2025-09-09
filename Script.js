@@ -107,19 +107,10 @@ function renderCartCount() {
 }
 
 function showCart() {
-  if (cart.length === 0) {
-    alert("Cart is empty!");
-    return;
-  }
-
   let text = "Cart:\n";
   cart.forEach((c) => (text += `${c.name} x ${c.qty} = ₹${c.price * c.qty}\n`));
   text += `\nTotal = ₹${cart.reduce((s, i) => s + i.price * i.qty, 0)}`;
-  text += `\n\nDo you want to print invoice?`;
-
-  if (confirm(text)) {
-    printInvoice();
-  }
+  alert(text);
 }
 
 /* ----------- Dark / Light Mode ----------- */
@@ -153,8 +144,7 @@ function sendMessage() {
   box.innerHTML += `<div class="bot-msg">${reply}</div>`;
   input.value = "";
   box.scrollTop = box.scrollHeight;
-}
-
+    }
 /* ----------- Invoice Printing ----------- */
 function printInvoice() {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -176,13 +166,18 @@ function printInvoice() {
       <h1>Invoice</h1>
       <table>
         <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
-        ${cart.map(c => `<tr>
+        ${cart.map(c => `
+          <tr>
             <td>${c.name}</td>
             <td>${c.qty}</td>
             <td>₹${c.price.toFixed(2)}</td>
             <td>₹${(c.qty * c.price).toFixed(2)}</td>
-          </tr>`).join("")}
-        <tr><td colspan="3" class="total">Grand Total</td><td>₹${total.toFixed(2)}</td></tr>
+          </tr>
+        `).join("")}
+        <tr>
+          <td colspan="3" class="total">Grand Total</td>
+          <td>₹${total.toFixed(2)}</td>
+        </tr>
       </table>
     </body>
     </html>
