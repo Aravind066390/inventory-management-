@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enhanced Inventory Management System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Inventory Management System</h1>
+      <div class="header-buttons">
+        <button class="chat-toggle" id="chatToggleBtn">
+          <span class="chat-toggle-icon">💬</span>
+        </button>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="theme-toggle-icon">☀</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="search-container">
+      <input type="text" id="search-bar" placeholder="Search for an item..." />
+      <button onclick="searchItem()">Search</button>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-bottom:12px;">
+      <button class="toggle-form-button" onclick="toggleFormPanel()">Add New Item</button>
+      <button onclick="showCart()" style="width:150px;">Open Cart (<span id="cartCount">0</span>)</button>
+    </div>
+
+    <div class="main-content">
+      <!-- Left Panel: Inventory -->
+      <div class="left-panel">
+        <section class="inventory-list">
+          <h2>Inventory List</h2>
+          <table id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- Right Panel: Add Form -->
+      <div class="right-panel" id="formPanel">
+        <section class="inventory-form">
+          <h2>Add New Item</h2>
+          <form id="inventoryForm">
+            <label for="item-name">Item Name</label>
+            <input type="text" id="item-name" placeholder="Enter item name" required />
+
+            <label for="item-quantity">Quantity</label>
+            <input type="number" id="item-quantity" placeholder="Enter quantity" required min="0"/>
+
+            <label for="item-price">Price</label>
+            <input type="number" id="item-price" placeholder="Enter price" required min="0" step="0.01"/>
+
+            <label for="item-description">Description</label>
+            <textarea id="item-description" placeholder="Enter item description"></textarea>
+
+            <label for="item-image">Image URL</label>
+            <input type="text" id="item-image" placeholder="Enter image URL" />
+
+            <button type="submit">Add Item</button>
+            <button type="button" onclick="closeFormPanel()" style="margin-top:8px; background:#607D8B;">Close</button>
+          </form>
+        </section>
+      </div>
+
+      <!-- Right Panel: Detail View (kept minimal) -->
+      <div class="right-panel detail-view" id="detailPanel">
+        <div class="item-detail">
+          <h2 id="detail-title">Item Details</h2>
+          <div class="item-image">
+            <img id="detail-image" src="" alt="Item Image" />
+          </div>
+
+          <div class="read-mode">
+            <div class="detail-info">
+              <p><span class="detail-label">Description:</span> <span id="detail-description" class="detail-value"></span></p>
+              <p><span class="detail-label">Price:</span> ₹<span id="detail-price" class="detail-value"></span></p>
+
+              <div class="quantity-control">
+                <span class="detail-label">Quantity:</span>
+                <button onclick="decreaseQuantity()">-</button>
+                <input type="number" id="detail-quantity" readonly />
+                <button onclick="increaseQuantity()">+</button>
+              </div>
+
+              <p><span class="detail-label">Total Value:</span> ₹<span id="detail-total" class="detail-value"></span></p>
+            </div>
+
+            <button class="edit-detail-button" onclick="switchToEditMode()">Edit Details</button>
+            <button class="back-button" onclick="hideDetailPanel()">Back to Inventory</button>
+          </div>
+
+          <div class="edit-mode">
+            <form id="editForm">
+              <label for="edit-name">Item Name</label>
+              <input type="text" id="edit-name" required />
+
+              <label for="edit-description">Description</label>
+              <textarea id="edit-description"></textarea>
+
+              <label for="edit-price">Price</label>
+              <input type="number" id="edit-price" required min="0" step="0.01" />
+
+              <label for="edit-quantity">Quantity</label>
+              <input type="number" id="edit-quantity" required min="0" />
+
+              <label for="edit-image">Image URL</label>
+              <input type="text" id="edit-image" />
+
+              <button type="submit" class="save-detail-button">Save Changes</button>
+              <button type="button" class="back-button" onclick="cancelEdit()">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart / Invoice Drawer (hidden, opened by showCart) -->
+    <div id="cartDrawer" class="cart-drawer" style="display:none;">
+      <h3>Cart</h3>
+      <div id="cartItemsContainer"></div>
+      <div style="margin-top:12px;">
+        <label>Discount (%) <input type="number" id="discountPct" value="0" min="0" max="100" style="width:80px;"></label>
+      </div>
+      <div class="cart-summary" id="cartSummary"></div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button onclick="checkout()">Checkout & Print</button>
+        <button onclick="clearCart()" style="background:#f44336;">Clear Cart</button>
+        <button onclick="closeCart()" style="background:#607D8B;">Close</button>
+      </div>
+    </div>
+
+    <!-- Chatbot Component (basic) -->
+    <div class="chatbot-container" id="chatbotContainer">
+      <div class="chatbot-header">
+        <h3>Inventory Assistant</h3>
+        <button class="close-chat" onclick="toggleChatbot()">×</button>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="bot-message">Hello! I'm your inventory assistant. Type "help" to see commands.</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Type your question here..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>Enhanced Inventory Management System</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
