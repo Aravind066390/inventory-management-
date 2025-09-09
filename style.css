@@ -1,0 +1,95 @@
+/* your original CSS (paste everything you already have) */
+/* I'll include the core + additions for cart + print */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+body {
+  background-color: #f4f7f6;
+  color: #333;
+  padding: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+  position: relative;
+}
+/* ... include all your CSS from the snippet you provided earlier ... */
+/* I assume you've pasted all that above; now add these new styles: */
+
+.cart-drawer {
+  position: fixed;
+  right: 20px;
+  top: 80px;
+  width: 360px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 1200;
+}
+
+.cart-item {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+
+.cart-summary {
+  margin-top: 12px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Printable invoice styles */
+.invoice {
+  width: 800px;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.invoice header {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.invoice h2 { margin:0; }
+
+.invoice table { width:100%; border-collapse:collapse; margin-top:12px; }
+.invoice table th, .invoice table td {
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:left;
+  font-size:14px;
+}
+
+.invoice .totals {
+  margin-top:12px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+/* Hide interactive UI when printing */
+@media print {
+  body * { visibility: hidden; }
+  .invoice, .invoice * { visibility: visible; }
+  .invoice { position: absolute; left:0; top:0; width:100%; }
+}
+
+/* small helper */
+.hidden { display:none; }
