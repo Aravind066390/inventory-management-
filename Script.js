@@ -247,3 +247,38 @@ window.onload = () => {
   btn.onclick = generateBill;
   document.body.appendChild(btn);
 };
+function generateBill() {
+  if (cart.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  let billWindow = window.open("", "Bill", "width=600,height=800");
+  billWindow.document.write("<html><head><title>Bill</title></head><body>");
+  billWindow.document.write("<h1>Customer Bill</h1>");
+  billWindow.document.write("<table border='1' width='100%' style='border-collapse:collapse;text-align:center;'>");
+  billWindow.document.write("<tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>");
+
+  let grandTotal = 0;
+  cart.forEach(item => {
+    const total = item.qty * item.price;
+    grandTotal += total;
+    billWindow.document.write(
+      `<tr><td>${item.name}</td><td>${item.qty}</td><td>₹${item.price.toFixed(2)}</td><td>₹${total.toFixed(2)}</td></tr>`
+    );
+  });
+
+  billWindow.document.write(`<tr><td colspan="3"><b>Grand Total</b></td><td><b>₹${grandTotal.toFixed(2)}</b></td></tr>`);
+  billWindow.document.write("</table>");
+  billWindow.document.write("</body></html>");
+  billWindow.document.close();
+
+  // Wait until the new window finishes loading, then print
+  billWindow.onload = function () {
+    billWindow.print();
+  };
+
+  // Clear cart after printing
+  cart = [];
+  updateCartDisplay();
+}
