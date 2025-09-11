@@ -204,11 +204,15 @@ function checkout() {
 
   billWindow.document.write(`<tr><td colspan="3"><b>Subtotal</b></td><td>₹${total.toFixed(2)}</td></tr>`);
   billWindow.document.write(`<tr><td colspan="3"><b>Discount</b></td><td>₹${discountAmount.toFixed(2)}</td></tr>`);
-  billWindow.document.write(`<tr><td colspan="3"><b>Final Total</b></td><td><b>₹${finalTotal.toFixed(2())}</b></td></tr>`);
+  billWindow.document.write(`<tr><td colspan="3"><b>Final Total</b></td><td><b>₹${finalTotal.toFixed(2)}</b></td></tr>`);
   billWindow.document.write("</table>");
-  billWindow.document.write("<br><button onclick='window.print()'>Print Bill</button>");
   billWindow.document.write("</body></html>");
   billWindow.document.close();
+
+  // 🚀 Auto-open print dialog when bill is ready
+  billWindow.onload = function () {
+    billWindow.print();
+  };
 
   clearCart();
   closeCart();
