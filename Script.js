@@ -1,284 +1,285 @@
-/* script.js - Inventory + Billing System */
-document.addEventListener("DOMContentLoaded", initApp);
+/* Script.js – Enhanced Inventory + Cart + Print + Chatbot + Theme */
 
-let inventory = [];
+// ---------------- Inventory & Cart State ----------------
+let inventory = [
+  { id: genId(), name: "Pen", qty: 50, price: 10.0, description: "Blue ink pen", image: "" },
+  { id: genId(), name: "Notebook", qty: 30, price: 45.0, description: "A4 ruled notebook", image: "" }
+];
 let cart = [];
+let selectedItem = null;
+let darkMode = false;
 
-// Utility to generate unique IDs
+// ---------------- Utility ----------------
 function genId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
 
-function initApp() {
-  renderInventory();
-  document.getElementById("inventoryForm").addEventListener("submit", addItem);
-  document.getElementById("editForm").addEventListener("submit", saveEdit);
-}
-
-// ---------- INVENTORY MANAGEMENT ----------
-function addItem(e) {
-  e.preventDefault();
-  const name = document.getElementById("item-name").value.trim();
-  const qty = parseInt(document.getElementById("item-quantity").value);
-  const price = parseFloat(document.getElementById("item-price").value);
-  const description = document.getElementById("item-description").value.trim();
-  const image = document.getElementById("item-image").value.trim();
-
-  const newItem = { id: genId(), name, qty, price, description, image };
-  inventory.push(newItem);
-
-  e.target.reset();
-  renderInventory();
-}
-
+// ---------------- Inventory Rendering ----------------
 function renderInventory() {
   const tbody = document.querySelector("#inventoryTable tbody");
   tbody.innerHTML = "";
-
   inventory.forEach(item => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="clickable" onclick="viewItem('${item.id}')">${item.name}</td>
+      <td>${item.name}</td>
       <td>${item.qty}</td>
       <td>₹${item.price.toFixed(2)}</td>
-      <td class="actions">
-        <button onclick="deleteItem('${item.id}')">Delete</button>
-        <button class="view-button" onclick="viewItem('${item.id}')">View</button>
+      <td>
+        <button onclick="viewDetails('${item.id}')">View</button>
+        <button onclick="addToCart('${item.id}')">Add to Cart</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-function deleteItem(id) {
-  inventory = inventory.filter(item => item.id !== id);
+// ---------------- Inventory Form ----------------
+document.getElementById("inventoryForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const newItem = {
+    id: genId(),
+    name: document.getElementById("item-name").value,
+    qty: parseInt(document.getElementById("item-quantity").value),
+    price: parseFloat(document.getElementById("item-price").value),
+    description: document.getElementById("item-description").value,
+    image: document.getElementById("item-image").value
+  };
+  inventory.push(newItem);
   renderInventory();
-}
+  e.target.reset();
+  closeFormPanel();
+});
 
-// ---------- ITEM DETAIL ----------
-function viewItem(id) {
-  const item = inventory.find(it => it.id === id);
-  if (!item) return;
+// ---------------- Detail Panel ----------------
+function viewDetails(id) {
+  selectedItem = inventory.find(i => i.id === id);
+  if (!selectedItem) return;
 
-  document.getElementById("detail-title").textContent = item.name;
-  document.getElementById("detail-description").textContent = item.description;
-  document.getElementById("detail-price").textContent = "₹" + item.price.toFixed(2);
-  document.getElementById("detail-quantity").value = item.qty;
-  document.getElementById("detail-total").textContent = "₹" + (item.qty * item.price).toFixed(2);
-  document.getElementById("detail-image").src = item.image || "https://via.placeholder.com/150";
+  document.getElementById("detail-title").innerText = selectedItem.name;
+  document.getElementById("detail-description").innerText = selectedItem.description;
+  document.getElementById("detail-price").innerText = selectedItem.price.toFixed(2);
+  document.getElementById("detail-quantity").value = selectedItem.qty;
+  document.getElementById("detail-total").innerText = (selectedItem.qty * selectedItem.price).toFixed(2);
+  document.getElementById("detail-image").src = selectedItem.image || "https://via.placeholder.com/150";
 
   document.getElementById("detailPanel").style.display = "block";
-  document.getElementById("formPanel").style.display = "none";
-
-  document.getElementById("edit-name").value = item.name;
-  document.getElementById("edit-description").value = item.description;
-  document.getElementById("edit-price").value = item.price;
-  document.getElementById("edit-quantity").value = item.qty;
-  document.getElementById("edit-image").value = item.image;
-
-  document.getElementById("editForm").dataset.id = item.id;
-
-  // Add "Add to Cart" button dynamically
-  if (!document.getElementById("addToCartBtn")) {
-    const btn = document.createElement("button");
-    btn.id = "addToCartBtn";
-    btn.textContent = "Add to Bill";
-    btn.onclick = () => addToCart(item.id);
-    document.querySelector(".item-detail .read-mode").appendChild(btn);
-  }
 }
-
 function hideDetailPanel() {
   document.getElementById("detailPanel").style.display = "none";
 }
 
+// Quantity control
+function increaseQuantity() {
+  if (!selectedItem) return;
+  selectedItem.qty++;
+  viewDetails(selectedItem.id);
+  renderInventory();
+}
+function decreaseQuantity() {
+  if (!selectedItem) return;
+  if (selectedItem.qty > 0) selectedItem.qty--;
+  viewDetails(selectedItem.id);
+  renderInventory();
+}
+
+// Edit Mode
 function switchToEditMode() {
-  document.getElementById("detailPanel").classList.add("detail-edit");
+  document.querySelector("#detailPanel .read-mode").style.display = "none";
+  document.querySelector("#detailPanel .edit-mode").style.display = "block";
+
+  document.getElementById("edit-name").value = selectedItem.name;
+  document.getElementById("edit-description").value = selectedItem.description;
+  document.getElementById("edit-price").value = selectedItem.price;
+  document.getElementById("edit-quantity").value = selectedItem.qty;
+  document.getElementById("edit-image").value = selectedItem.image;
 }
 function cancelEdit() {
-  document.getElementById("detailPanel").classList.remove("detail-edit");
+  document.querySelector("#detailPanel .read-mode").style.display = "block";
+  document.querySelector("#detailPanel .edit-mode").style.display = "none";
 }
-function saveEdit(e) {
+document.getElementById("editForm").addEventListener("submit", e => {
   e.preventDefault();
-  const id = e.target.dataset.id;
-  const item = inventory.find(it => it.id === id);
-  if (!item) return;
-
-  item.name = document.getElementById("edit-name").value;
-  item.description = document.getElementById("edit-description").value;
-  item.price = parseFloat(document.getElementById("edit-price").value);
-  item.qty = parseInt(document.getElementById("edit-quantity").value);
-  item.image = document.getElementById("edit-image").value;
+  selectedItem.name = document.getElementById("edit-name").value;
+  selectedItem.description = document.getElementById("edit-description").value;
+  selectedItem.price = parseFloat(document.getElementById("edit-price").value);
+  selectedItem.qty = parseInt(document.getElementById("edit-quantity").value);
+  selectedItem.image = document.getElementById("edit-image").value;
 
   renderInventory();
   cancelEdit();
-  viewItem(id);
-}
+  viewDetails(selectedItem.id);
+});
 
-// ---------- QUANTITY CONTROL ----------
-function increaseQuantity() {
-  const qtyEl = document.getElementById("detail-quantity");
-  qtyEl.value = parseInt(qtyEl.value) + 1;
-  updateTotal();
-}
-function decreaseQuantity() {
-  const qtyEl = document.getElementById("detail-quantity");
-  if (parseInt(qtyEl.value) > 1) {
-    qtyEl.value = parseInt(qtyEl.value) - 1;
-    updateTotal();
-  }
-}
-function updateTotal() {
-  const qty = parseInt(document.getElementById("detail-quantity").value);
-  const price = parseFloat(document.getElementById("detail-price").textContent.replace("₹", ""));
-  document.getElementById("detail-total").textContent = "₹" + (qty * price).toFixed(2);
-}
-
-// ---------- BILLING ----------
+// ---------------- Cart System ----------------
 function addToCart(id) {
-  const item = inventory.find(it => it.id === id);
-  if (!item) return;
-
-  const existing = cart.find(it => it.id === id);
-  if (existing) {
-    existing.qty += 1;
+  const item = inventory.find(i => i.id === id);
+  if (!item || item.qty <= 0) {
+    alert("Item not available!");
+    return;
+  }
+  const cartItem = cart.find(c => c.id === id);
+  if (cartItem) {
+    cartItem.qty++;
   } else {
     cart.push({ ...item, qty: 1 });
   }
-  alert(item.name + " added to bill!");
+  item.qty--;
+  updateCartDisplay();
+  renderInventory();
 }
 
-function generateBill() {
+function updateCartDisplay() {
+  document.getElementById("cartCount").innerText = cart.reduce((sum, i) => sum + i.qty, 0);
+
+  const container = document.getElementById("cartItemsContainer");
+  container.innerHTML = "";
+  let total = 0;
+  cart.forEach(c => {
+    const subtotal = c.qty * c.price;
+    total += subtotal;
+    const div = document.createElement("div");
+    div.innerHTML = `
+      ${c.name} x ${c.qty} = ₹${subtotal.toFixed(2)}
+      <button onclick="removeFromCart('${c.id}')">Remove</button>
+    `;
+    container.appendChild(div);
+  });
+
+  let discountPct = parseFloat(document.getElementById("discountPct").value) || 0;
+  let discountAmount = total * (discountPct / 100);
+  let finalTotal = total - discountAmount;
+
+  document.getElementById("cartSummary").innerHTML =
+    `Subtotal: ₹${total.toFixed(2)} <br> Discount: ₹${discountAmount.toFixed(2)} <br> <b>Total: ₹${finalTotal.toFixed(2)}</b>`;
+}
+function removeFromCart(id) {
+  const index = cart.findIndex(c => c.id === id);
+  if (index >= 0) {
+    inventory.find(i => i.id === id).qty += cart[index].qty;
+    cart.splice(index, 1);
+  }
+  updateCartDisplay();
+  renderInventory();
+}
+function clearCart() {
+  cart.forEach(c => {
+    inventory.find(i => i.id === c.id).qty += c.qty;
+  });
+  cart = [];
+  updateCartDisplay();
+  renderInventory();
+}
+
+// ---------------- Cart Popup + Print ----------------
+function showCart() {
+  document.getElementById("cartDrawer").style.display = "block";
+  updateCartDisplay();
+}
+function closeCart() {
+  document.getElementById("cartDrawer").style.display = "none";
+}
+
+function checkout() {
   if (cart.length === 0) {
     alert("Cart is empty!");
     return;
   }
 
+  // Open bill in new window
   let billWindow = window.open("", "Bill", "width=600,height=800");
-  billWindow.document.write("<h1>Customer Bill</h1>");
-  billWindow.document.write("<table border='1' width='100%' style='border-collapse:collapse;text-align:center;'>");
+  billWindow.document.write("<html><head><title>Bill</title></head><body>");
+  billWindow.document.write("<h2>Invoice</h2><table border='1' width='100%' style='border-collapse:collapse;text-align:center;'>");
   billWindow.document.write("<tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>");
 
-  let grandTotal = 0;
-  cart.forEach(item => {
-    const total = item.qty * item.price;
-    grandTotal += total;
-    billWindow.document.write(
-      `<tr><td>${item.name}</td><td>${item.qty}</td><td>₹${item.price.toFixed(2)}</td><td>₹${total.toFixed(2)}</td></tr>`
-    );
+  let total = 0;
+  cart.forEach(c => {
+    const sub = c.qty * c.price;
+    total += sub;
+    billWindow.document.write(`<tr><td>${c.name}</td><td>${c.qty}</td><td>₹${c.price.toFixed(2)}</td><td>₹${sub.toFixed(2)}</td></tr>`);
   });
 
-  billWindow.document.write(`<tr><td colspan="3"><b>Grand Total</b></td><td><b>₹${grandTotal.toFixed(2)}</b></td></tr>`);
+  let discountPct = parseFloat(document.getElementById("discountPct").value) || 0;
+  let discountAmount = total * (discountPct / 100);
+  let finalTotal = total - discountAmount;
+
+  billWindow.document.write(`<tr><td colspan="3"><b>Subtotal</b></td><td>₹${total.toFixed(2)}</td></tr>`);
+  billWindow.document.write(`<tr><td colspan="3"><b>Discount</b></td><td>₹${discountAmount.toFixed(2)}</td></tr>`);
+  billWindow.document.write(`<tr><td colspan="3"><b>Final Total</b></td><td><b>₹${finalTotal.toFixed(2())}</b></td></tr>`);
   billWindow.document.write("</table>");
   billWindow.document.write("<br><button onclick='window.print()'>Print Bill</button>");
+  billWindow.document.write("</body></html>");
   billWindow.document.close();
 
-  cart = []; // clear after bill generation
+  clearCart();
+  closeCart();
 }
 
-// ---------- SEARCH ----------
+// ---------------- Search ----------------
 function searchItem() {
   const query = document.getElementById("search-bar").value.toLowerCase();
   const tbody = document.querySelector("#inventoryTable tbody");
   tbody.innerHTML = "";
-
   inventory
-    .filter(item => item.name.toLowerCase().includes(query))
+    .filter(i => i.name.toLowerCase().includes(query))
     .forEach(item => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="clickable" onclick="viewItem('${item.id}')">${item.name}</td>
+        <td>${item.name}</td>
         <td>${item.qty}</td>
         <td>₹${item.price.toFixed(2)}</td>
-        <td class="actions">
-          <button onclick="deleteItem('${item.id}')">Delete</button>
-          <button class="view-button" onclick="viewItem('${item.id}')">View</button>
+        <td>
+          <button onclick="viewDetails('${item.id}')">View</button>
+          <button onclick="addToCart('${item.id}')">Add to Cart</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
 }
 
-// ---------- THEME & CHAT ----------
-function toggleTheme() {
-  document.body.classList.toggle("dark-mode");
-}
+// ---------------- Form Panel Toggle ----------------
 function toggleFormPanel() {
   const panel = document.getElementById("formPanel");
   panel.style.display = panel.style.display === "block" ? "none" : "block";
 }
-function toggleChatbot() {
-  const bot = document.getElementById("chatbotContainer");
-  bot.style.display = bot.style.display === "flex" ? "none" : "flex";
+function closeFormPanel() {
+  document.getElementById("formPanel").style.display = "none";
 }
+
+// ---------------- Theme ----------------
+function toggleTheme() {
+  darkMode = !darkMode;
+  document.body.classList.toggle("dark-mode", darkMode);
+  document.querySelector(".theme-toggle-icon").innerText = darkMode ? "🌙" : "☀";
+}
+
+// ---------------- Chatbot ----------------
+function toggleChatbot() {
+  const chat = document.getElementById("chatbotContainer");
+  chat.style.display = chat.style.display === "block" ? "none" : "block";
+}
+
 function sendMessage() {
   const input = document.getElementById("chatInput");
   const msg = input.value.trim();
   if (!msg) return;
 
-  const container = document.getElementById("chatbotMessages");
-  const userMsg = document.createElement("div");
-  userMsg.className = "user-message";
-  userMsg.textContent = msg;
-  container.appendChild(userMsg);
+  const messages = document.getElementById("chatbotMessages");
+  messages.innerHTML += `<div class="user-message">${msg}</div>`;
 
-  const botMsg = document.createElement("div");
-  botMsg.className = "bot-message";
-  botMsg.textContent = "You said: " + msg;
-  container.appendChild(botMsg);
+  let reply = "Sorry, I didn't understand.";
+  if (msg.toLowerCase() === "help") {
+    reply = "You can search items, add to cart, checkout, or ask about stock.";
+  } else if (msg.toLowerCase().includes("stock")) {
+    reply = "Check the inventory list to view stock quantities.";
+  }
 
+  messages.innerHTML += `<div class="bot-message">${reply}</div>`;
   input.value = "";
-  container.scrollTop = container.scrollHeight;
-}
-function exitInventory() {
-  if (confirm("Are you sure you want to exit?")) {
-    window.close();
-  }
+  messages.scrollTop = messages.scrollHeight;
 }
 
-// Add a floating "Generate Bill" button
-window.onload = () => {
-  const btn = document.createElement("button");
-  btn.textContent = "Generate Bill";
-  btn.style.position = "fixed";
-  btn.style.bottom = "20px";
-  btn.style.left = "20px";
-  btn.style.backgroundColor = "#2196F3";
-  btn.onclick = generateBill;
-  document.body.appendChild(btn);
-};
-function generateBill() {
-  if (cart.length === 0) {
-    alert("Cart is empty!");
-    return;
-  }
-
-  let billWindow = window.open("", "Bill", "width=600,height=800");
-  billWindow.document.write("<html><head><title>Bill</title></head><body>");
-  billWindow.document.write("<h1>Customer Bill</h1>");
-  billWindow.document.write("<table border='1' width='100%' style='border-collapse:collapse;text-align:center;'>");
-  billWindow.document.write("<tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>");
-
-  let grandTotal = 0;
-  cart.forEach(item => {
-    const total = item.qty * item.price;
-    grandTotal += total;
-    billWindow.document.write(
-      `<tr><td>${item.name}</td><td>${item.qty}</td><td>₹${item.price.toFixed(2)}</td><td>₹${total.toFixed(2)}</td></tr>`
-    );
-  });
-
-  billWindow.document.write(`<tr><td colspan="3"><b>Grand Total</b></td><td><b>₹${grandTotal.toFixed(2)}</b></td></tr>`);
-  billWindow.document.write("</table>");
-  billWindow.document.write("</body></html>");
-  billWindow.document.close();
-
-  // Wait until the new window finishes loading, then print
-  billWindow.onload = function () {
-    billWindow.print();
-  };
-
-  // Clear cart after printing
-  cart = [];
+// ---------------- Init ----------------
+document.addEventListener("DOMContentLoaded", () => {
+  renderInventory();
   updateCartDisplay();
-}
+});
